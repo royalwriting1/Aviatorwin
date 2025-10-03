@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuildGenius - Create Apps with AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #3B82F6;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #3B82F6; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white">
+    <!-- Header -->
+    <nav class="border-b border-gray-800 py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🚀</span>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                    BuildGenius
+                </h1>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="showSection('home')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition">Home</button>
+                <button onclick="showSection('create')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition">Create App</button>
+                <button onclick="showSection('my-apps')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition">My Apps</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        
+        <!-- Home Section -->
+        <div id="home-section" class="section">
+            <div class="text-center max-w-4xl mx-auto">
+                <h1 class="text-5xl font-bold mb-6 typewriter">
+                    Build Apps with AI in Seconds
+                </h1>
+                <p class="text-xl text-gray-300 mb-8">
+                    Describe your dream app. Our AI will code it instantly. Deploy with one click.
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-12">
+                    <div class="bg-gray-800 p-6 rounded-xl">
+                        <div class="text-3xl mb-4">💬</div>
+                        <h3 class="text-xl font-bold mb-2">Describe</h3>
+                        <p class="text-gray-400">Tell us what app you want in simple words</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl">
+                        <div class="text-3xl mb-4">⚡</div>
+                        <h3 class="text-xl font-bold mb-2">Generate</h3>
+                        <p class="text-gray-400">AI writes the code automatically</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl">
+                        <div class="text-3xl mb-4">🌐</div>
+                        <h3 class="text-xl font-bold mb-2">Deploy</h3>
+                        <p class="text-gray-400">Go live instantly with one click</p>
+                    </div>
+                </div>
+
+                <button onclick="showSection('create')" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105">
+                    Start Building Now - FREE
+                </button>
+            </div>
+        </div>
+
+        <!-- Create App Section -->
+        <div id="create-section" class="section hidden">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-center">Create Your App</h2>
+                
+                <div class="bg-gray-800 rounded-xl p-6 mb-6">
+                    <label class="block text-lg font-medium mb-4">Describe your app in detail:</label>
+                    <textarea 
+                        id="app-prompt" 
+                        class="w-full h-48 p-4 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Example: Create a todo list app with dark theme, add/delete tasks, local storage, and beautiful UI. Make it responsive for mobile and desktop."
+                    ></textarea>
+                    
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <button onclick="insertTemplate('todo')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Todo App</button>
+                        <button onclick="insertTemplate('calculator')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Calculator</button>
+                        <button onclick="insertTemplate('weather')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Weather App</button>
+                        <button onclick="insertTemplate('portfolio')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Portfolio Site</button>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button onclick="generateApp()" class="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105 mb-4">
+                        🚀 Generate App with AI
+                    </button>
+                    <p class="text-gray-400">No coding required. 100% free.</p>
+                </div>
+
+                <!-- Results -->
+                <div id="result-section" class="hidden mt-8">
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <h3 class="text-2xl font-bold mb-4 text-green-400">✅ Your App is Ready!</h3>
+                        <div class="flex space-x-4 mb-4">
+                            <button onclick="downloadApp()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold">
+                                💾 Download Code
+                            </button>
+                            <button onclick="previewApp()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-bold">
+                                👀 Preview App
+                            </button>
+                            <button onclick="deployApp()" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-bold">
+                                🌐 Deploy Live
+                            </button>
+                        </div>
+                        <div id="generated-code" class="bg-black p-4 rounded-lg overflow-auto max-h-96">
+                            <!-- Generated code will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Apps Section -->
+        <div id="my-apps-section" class="section hidden">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-center">My Created Apps</h2>
+                <div id="apps-list" class="bg-gray-800 rounded-xl p-6">
+                    <p class="text-gray-400 text-center">No apps created yet. Go to "Create App" to build your first app!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-12 py-8">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>Built with ❤️ by BuildGenius | AI-Powered App Development</p>
+            <p class="mt-2">100% Free • No Coding Required • Instant Deployment</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
