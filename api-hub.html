@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Hub - BuildGenius</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .api-container {
+            height: calc(100vh - 4rem);
+        }
+        .endpoints-sidebar {
+            height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+        .code-editor {
+            height: 200px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="flex items-center space-x-2 text-gray-300 hover:text-white">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Dashboard</span>
+                </a>
+                <h1 class="text-xl font-bold">API Hub</h1>
+                <span class="text-sm text-gray-400">Connect & Manage APIs</span>
+            </div>
+            <div class="flex space-x-3">
+                <button class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-plug"></i>
+                    <span>Connect API</span>
+                </button>
+                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-bolt"></i>
+                    <span>Test All</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="api-container flex">
+        <!-- APIs Sidebar -->
+        <div class="w-80 bg-gray-800 border-r border-gray-700 endpoints-sidebar">
+            <div class="p-4 border-b border-gray-700">
+                <h2 class="font-semibold mb-3">APIs</h2>
+                <div class="flex space-x-2 mb-3">
+                    <button class="flex-1 bg-gray-700 py-2 rounded text-sm">External</button>
+                    <button class="flex-1 bg-gray-600 py-2 rounded text-sm">Internal</button>
+                </div>
+                <input type="text" placeholder="Search APIs..." class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm">
+            </div>
+
+            <!-- API Endpoints List -->
+            <div class="p-4 space-y-3">
+                <div class="bg-gray-750 rounded-lg p-4 cursor-pointer hover:bg-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <span class="font-medium">Stripe API</span>
+                        </div>
+                        <span class="px-2 py-1 bg-green-500 text-xs rounded">Live</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Payment processing and subscriptions</p>
+                </div>
+
+                <div class="bg-gray-750 rounded-lg p-4 cursor-pointer hover:bg-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            <span class="font-medium">SendGrid</span>
+                        </div>
+                        <span class="px-2 py-1 bg-blue-500 text-xs rounded">Active</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Email marketing and transactions</p>
+                </div>
+
+                <div class="bg-gray-750 rounded-lg p-4 cursor-pointer hover:bg-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <span class="font-medium">Google Maps</span>
+                        </div>
+                        <span class="px-2 py-1 bg-yellow-500 text-xs rounded">Testing</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Maps and location services</p>
+                </div>
+
+                <div class="bg-gray-750 rounded-lg p-4 cursor-pointer hover:bg-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                            <span class="font-medium">Twilio</span>
+                        </div>
+                        <span class="px-2 py-1 bg-purple-500 text-xs rounded">Connected</span>
+                    </div>
+                    <p class="text-sm text-gray-400">SMS and voice communications</p>
+                </div>
+            </div>
+
+            <!-- Quick Connect -->
+            <div class="p-4 border-t border-gray-700">
+                <h3 class="font-semibold mb-3 text-sm">Quick Connect</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 text-center">
+                        <i class="fab fa-google text-red-400 mb-1"></i>
+                        <p class="text-xs">Google</p>
+                    </button>
+                    <button class="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 text-center">
+                        <i class="fab fa-facebook text-blue-400 mb-1"></i>
+                        <p class="text-xs">Facebook</p>
+                    </button>
+                    <button class="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 text-center">
+                        <i class="fab fa-github text-gray-400 mb-1"></i>
+                        <p class="text-xs">GitHub</p>
+                    </button>
+                    <button class="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 text-center">
+                        <i class="fab fa-stripe text-purple-400 mb-1"></i>
+                        <p class="text-xs">Stripe</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main API Content -->
+        <div class="flex-1 p-6 overflow-auto">
+            <!-- API Details -->
+            <div class="bg-gray-800 rounded-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">Stripe API</h2>
+                        <p class="text-gray-400">Payment processing and subscription management</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 bg-green-600 rounded-lg">Test API</button>
+                        <button class="px-4 py-2 bg-blue-600 rounded-lg">Documentation</button>
+                        <button class="px-4 py-2 bg-red-600 rounded-lg">Disconnect</button>
+                    </div>
+                </div>
+
+                <!-- API Configuration -->
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h3 class="font-semibold mb-3">Configuration</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm text-gray-400 block mb-1">API Key</label>
+                                <input type="password" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="sk_live_xxxxxxxx">
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-400 block mb-1">Webhook URL</label>
+                                <input type="text" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="https://api.example.com/webhooks/stripe">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold mb-3">Status & Metrics</h3>
+                        <div class="bg-gray-750 rounded-lg p-4">
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-400">Status</p>
+                                    <p class="text-green-400 font-semibold">Connected</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Requests Today</p>
+                                    <p class="font-semibold">1,247</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Success Rate</p>
+                                    <p class="font-semibold">99.8%</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Last Used</p>
+                                    <p class="font-semibold">2 min ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Endpoints -->
+                <div>
+                    <h3 class="font-semibold mb-3">Endpoints</h3>
+                    <div class="space-y-3">
+                        <div class="bg-gray-750 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-green-500 text-xs rounded">POST</span>
+                                    <code class="text-sm">/v1/payment_intents</code>
+                                </div>
+                                <button class="px-3 py-1 bg-blue-600 rounded text-xs">Test</button>
+                            </div>
+                            <p class="text-sm text-gray-400">Create a PaymentIntent</p>
+                        </div>
+
+                        <div class="bg-gray-750 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-blue-500 text-xs rounded">GET</span>
+                                    <code class="text-sm">/v1/customers</code>
+                                </div>
+                                <button class="px-3 py-1 bg-blue-600 rounded text-xs">Test</button>
+                            </div>
+                            <p class="text-sm text-gray-400">List all customers</p>
+                        </div>
+
+                        <div class="bg-gray-750 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-purple-500 text-xs rounded">POST</span>
+                                    <code class="text-sm">/v1/subscriptions</code>
+                                </div>
+                                <button class="px-3 py-1 bg-blue-600 rounded text-xs">Test</button>
+                            </div>
+                            <p class="text-sm text-gray-400">Create a subscription</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Tester -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-bold mb-4">API Tester</h2>
+                
+                <div class="grid grid-cols-4 gap-4 mb-4">
+                    <select class="bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                        <option>GET</option>
+                        <option>POST</option>
+                        <option>PUT</option>
+                        <option>DELETE</option>
+                    </select>
+                    <input type="text" class="col-span-2 bg-gray-700 border border-gray-600 rounded px-3 py-2" placeholder="https://api.stripe.com/v1/customers">
+                    <button class="bg-green-600 hover:bg-green-700 rounded-lg font-semibold">Send</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Request -->
+                    <div>
+                        <h3 class="font-semibold mb-2">Request</h3>
+                        <div class="code-editor bg-gray-900 border border-gray-700 rounded">
+                            <textarea class="w-full h-full bg-transparent p-4 font-mono text-sm resize-none focus:outline-none">{
+  "limit": 10,
+  "starting_after": null
+}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Response -->
+                    <div>
+                        <h3 class="font-semibold mb-2">Response</h3>
+                        <div class="code-editor bg-gray-900 border border-gray-700 rounded">
+                            <pre class="p-4 font-mono text-sm text-green-400 overflow-auto">{
+  "object": "list",
+  "data": [...],
+  "has_more": false,
+  "url": "/v1/customers"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api-hub.js"></script>
+</body>
+</html>
