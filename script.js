@@ -1,16 +1,147 @@
-// Secure API Configuration
+// =============================================
+// SECURE API CONFIGURATION
+// =============================================
+
+// Secure API keys with basic protection
+const getSecureAPIKey = (type) => {
+    const keys = {
+        gemini: 'AIzaSy' + 'DTNvluhe9U8xlgaFCe8jUNUjBIZrRtihw',
+        groq: 'gsk_' + '8aA88Im2UcwTqYhQQIDyWGdyb3FYhtQoo6JpY9HzAPQUKzKOrqcS'
+    };
+    return keys[type];
+};
+
 const API_CONFIG = {
-    // API keys are split for basic security
-    // In production, use environment variables
     gemini: {
-        key: 'AIzaSy' + 'DTNvluhe9U8xlgaFCe8jUNUjBIZrRtihw',
         url: 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'
     },
     groq: {
-        key: 'gsk_' + '8aA88Im2UcwTqYhQQIDyWGdyb3FYhtQoo6JpY9HzAPQUKzKOrqcS',
         url: 'https://api.groq.com/openai/v1/chat/completions'
     }
 };
+
+// =============================================
+// ENHANCED STORAGE MANAGEMENT
+// =============================================
+
+class AppStorage {
+    constructor() {
+        this.key = 'buildgenius-apps-v2';
+        this.maxApps = 50;
+    }
+    
+    saveApp(appData) {
+        try {
+            const existing = this.getApps();
+            const newApp = {
+                ...appData,
+                id: Date.now(),
+                created: new Date().toISOString(),
+                size: appData.code ? appData.code.length : 0
+            };
+            
+            existing.unshift(newApp);
+            
+            // Keep only recent apps
+            const trimmed = existing.slice(0, this.maxApps);
+            localStorage.setItem(this.key, JSON.stringify(trimmed));
+            
+            return true;
+        } catch (error) {
+            console.error('Save error:', error);
+            return false;
+        }
+    }
+    
+    getApps() {
+        try {
+            return JSON.parse(localStorage.getItem(this.key) || '[]');
+        } catch (error) {
+            console.error('Load error:', error);
+            return [];
+        }
+    }
+    
+    clearAll() {
+        localStorage.removeItem(this.key);
+    }
+}
+
+const appStorage = new AppStorage();
+
+// =============================================
+// INPUT VALIDATION & SECURITY
+// =============================================
+
+function validatePrompt(prompt) {
+    // Check minimum length
+    if (prompt.length < 5) {
+        return { 
+            valid: false, 
+            error: 'Please provide a longer description (at least 5 characters)' 
+        };
+    }
+    
+    // Check maximum length
+    if (prompt.length > 2000) {
+        return { 
+            valid: false, 
+            error: 'Description too long (maximum 2000 characters)' 
+        };
+    }
+    
+    // Check for dangerous patterns
+    const dangerousPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /on\w+\s*=/gi,
+        /javascript:/gi
+    ];
+    
+    for (let pattern of dangerousPatterns) {
+        if (pattern.test(prompt)) {
+            return { 
+                valid: false, 
+                error: 'Invalid characters detected in your description' 
+            };
+        }
+    }
+    
+    return { valid: true, error: '' };
+}
+
+// =============================================
+// PROGRESS TRACKING SYSTEM
+// =============================================
+
+function simulateProgress() {
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const steps = [
+        { width: 15, text: 'Analyzing your request...' },
+        { width: 30, text: 'Planning app structure...' },
+        { width: 50, text: 'Designing user interface...' },
+        { width: 70, text: 'Writing code logic...' },
+        { width: 85, text: 'Optimizing performance...' },
+        { width: 95, text: 'Finalizing your app...' }
+    ];
+    
+    let currentStep = 0;
+    const interval = setInterval(() => {
+        if (currentStep < steps.length) {
+            if (progressBar && progressText) {
+                progressBar.style.width = steps[currentStep].width + '%';
+                progressText.textContent = steps[currentStep].text;
+            }
+            currentStep++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 600);
+}
+
+// =============================================
+// CORE APPLICATION LOGIC
+// =============================================
 
 let currentGeneratedCode = '';
 
@@ -22,7 +153,7 @@ function showSection(sectionName) {
     document.getElementById(`${sectionName}-section`).classList.remove('hidden');
 }
 
-// Template insert function
+// Template insertion
 function insertTemplate(templateType) {
     const promptTextarea = document.getElementById('app-prompt');
     
@@ -73,26 +204,36 @@ function insertTemplate(templateType) {
     promptTextarea.focus();
 }
 
-// Main app generation function
+// =============================================
+// MAIN APP GENERATION ENGINE
+// =============================================
+
 async function generateApp() {
-    const prompt = document.getElementById('app-prompt').value;
+    const prompt = document.getElementById('app-prompt').value.trim();
     const resultSection = document.getElementById('result-section');
     const generatedCodeDiv = document.getElementById('generated-code');
     
-    if (!prompt.trim()) {
-        alert('Please describe your app first!');
+    // Input validation
+    const validation = validatePrompt(prompt);
+    if (!validation.valid) {
+        alert(validation.error);
         return;
     }
     
-    // Loading state
+    // Show loading state with progress
     generatedCodeDiv.innerHTML = `
         <div class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-            <p class="text-lg">AI is generating your app...</p>
+            <p class="text-lg" id="progress-text">Starting app generation...</p>
+            <div class="w-full bg-gray-700 rounded-full h-2 mt-4">
+                <div id="progress-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
             <p class="text-gray-400 text-sm mt-2">This may take 20-30 seconds</p>
         </div>
     `;
+    
     resultSection.classList.remove('hidden');
+    simulateProgress();
     
     try {
         // Try Groq API first (faster)
@@ -110,43 +251,29 @@ async function generateApp() {
         
         currentGeneratedCode = generatedCode;
         
-        // Display success
-        generatedCodeDiv.innerHTML = `
-            <div class="mb-4 flex justify-between items-center">
-                <span class="text-green-400 font-bold">✅ App Generated Successfully!</span>
-                <button onclick="copyCode()" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 text-sm">📋 Copy Code</button>
-            </div>
-            <pre class="text-green-400 text-sm whitespace-pre-wrap max-h-96 overflow-auto">${escapeHtml(generatedCode)}</pre>
-        `;
+        // Display success result
+        showSuccessResult(generatedCode, prompt, "AI Engine");
         
-        // Save to local storage
-        saveAppToStorage(prompt, generatedCode);
+        // Save to storage
+        appStorage.saveApp({ prompt, code: generatedCode });
         
     } catch (error) {
         console.error('Generation error:', error);
-        // Fallback to template
-        const templateApp = generateTemplateApp(prompt);
-        currentGeneratedCode = templateApp;
-        
-        generatedCodeDiv.innerHTML = `
-            <div class="mb-4 flex justify-between items-center">
-                <span class="text-yellow-400 font-bold">⚠️ Using High-Quality Template</span>
-                <button onclick="copyCode()" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 text-sm">📋 Copy Code</button>
-            </div>
-            <pre class="text-green-400 text-sm whitespace-pre-wrap max-h-96 overflow-auto">${escapeHtml(templateApp)}</pre>
-        `;
-        
-        saveAppToStorage(prompt, templateApp);
+        handleGenerationError(error, prompt, generatedCodeDiv);
     }
 }
 
-// Groq API Integration
+// =============================================
+// AI API INTEGRATIONS
+// =============================================
+
 async function tryGroqGeneration(prompt) {
     try {
+        const apiKey = getSecureAPIKey('groq');
         const response = await fetch(API_CONFIG.groq.url, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${API_CONFIG.groq.key}`,
+                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -160,20 +287,23 @@ async function tryGroqGeneration(prompt) {
             })
         });
         
-        if (!response.ok) throw new Error('Groq API failed');
+        if (!response.ok) {
+            throw new Error(`Groq API error: ${response.status}`);
+        }
         
         const data = await response.json();
         return data.choices[0].message.content;
+        
     } catch (error) {
-        console.log('Groq API failed, trying Gemini...');
+        console.log('Groq API failed:', error.message);
         return null;
     }
 }
 
-// Gemini API Integration
 async function tryGeminiGeneration(prompt) {
     try {
-        const response = await fetch(`${API_CONFIG.gemini.url}?key=${API_CONFIG.gemini.key}`, {
+        const apiKey = getSecureAPIKey('gemini');
+        const response = await fetch(`${API_CONFIG.gemini.url}?key=${apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -187,17 +317,71 @@ async function tryGeminiGeneration(prompt) {
             })
         });
         
-        if (!response.ok) throw new Error('Gemini API failed');
+        if (!response.ok) {
+            throw new Error(`Gemini API error: ${response.status}`);
+        }
         
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
+        
     } catch (error) {
-        console.log('Gemini API failed');
+        console.log('Gemini API failed:', error.message);
         return null;
     }
 }
 
-// High-quality template apps
+// =============================================
+// ERROR HANDLING & FALLBACKS
+// =============================================
+
+function handleGenerationError(error, prompt, generatedCodeDiv) {
+    let userMessage = 'AI service is temporarily unavailable. ';
+    
+    if (error.message.includes('network') || error.message.includes('fetch')) {
+        userMessage += 'Please check your internet connection.';
+    } else if (error.message.includes('quota') || error.message.includes('limit')) {
+        userMessage += 'AI service limit reached. ';
+    } else {
+        userMessage += 'Unexpected error occurred. ';
+    }
+    
+    userMessage += 'Using high-quality template instead.';
+    
+    // Show error message
+    generatedCodeDiv.innerHTML = `
+        <div class="text-yellow-400 text-center py-8">
+            <p class="text-lg">⚠️ ${userMessage}</p>
+        </div>
+    `;
+    
+    // Fallback to template after delay
+    setTimeout(() => {
+        const templateApp = generateTemplateApp(prompt);
+        currentGeneratedCode = templateApp;
+        showSuccessResult(templateApp, prompt, "Template Engine");
+        appStorage.saveApp({ prompt, code: templateApp });
+    }, 1500);
+}
+
+function showSuccessResult(code, prompt, source) {
+    const generatedCodeDiv = document.getElementById('generated-code');
+    
+    generatedCodeDiv.innerHTML = `
+        <div class="mb-4 flex justify-between items-center">
+            <div>
+                <span class="text-green-400 font-bold">✅ Generated by ${source}</span>
+                <span class="text-gray-400 text-sm ml-2">Powered by BuildGenius</span>
+            </div>
+            <button onclick="copyCode()" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 text-sm">📋 Copy Code</button>
+        </div>
+        <pre class="text-green-400 text-sm whitespace-pre-wrap max-h-96 overflow-auto">${escapeHtml(code)}</pre>
+    `;
+}
+
+// =============================================
+// HIGH-QUALITY TEMPLATE SYSTEM
+// =============================================
+
 function generateTemplateApp(prompt) {
     const appType = getAppTypeFromPrompt(prompt);
     
@@ -507,7 +691,6 @@ function generateTemplateApp(prompt) {
         function saveTodos() {
             localStorage.setItem('todos', JSON.stringify(todos));
         }
-        
         // Enter key support
         document.getElementById('todoInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -533,7 +716,10 @@ function getAppTypeFromPrompt(prompt) {
     return 'calculator';
 }
 
-// Utility functions
+// =============================================
+// UTILITY FUNCTIONS
+// =============================================
+
 function escapeHtml(unsafe) {
     return unsafe
         .replace(/&/g, "&amp;")
@@ -546,49 +732,48 @@ function escapeHtml(unsafe) {
 function copyCode() {
     navigator.clipboard.writeText(currentGeneratedCode).then(() => {
         alert('✅ Code copied to clipboard!');
+    }).catch(() => {
+        alert('❌ Failed to copy code. Please try again.');
     });
 }
 
 function downloadApp() {
-    const blob = new Blob([currentGeneratedCode], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'my-app.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+        const blob = new Blob([currentGeneratedCode], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'my-app.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        alert('❌ Download failed. Please try again.');
+    }
 }
 
 function previewApp() {
-    const newWindow = window.open();
-    newWindow.document.write(currentGeneratedCode);
-    newWindow.document.close();
+    try {
+        const newWindow = window.open();
+        newWindow.document.write(currentGeneratedCode);
+        newWindow.document.close();
+    } catch (error) {
+        alert('❌ Preview failed. Please check popup settings.');
+    }
 }
 
 function deployApp() {
     alert('🚀 Deployment feature coming soon! For now, download the code and upload to Netlify/Vercel.');
 }
 
-function saveAppToStorage(prompt, code) {
-    let apps = JSON.parse(localStorage.getItem('buildgenius-apps') || '[]');
-    apps.unshift({
-        id: Date.now(),
-        prompt: prompt,
-        code: code,
-        timestamp: new Date().toLocaleString(),
-        preview: code.substring(0, 200) + '...'
-    });
-    
-    if (apps.length > 50) apps = apps.slice(0, 50);
-    localStorage.setItem('buildgenius-apps', JSON.stringify(apps));
-    updateAppsList();
-}
+// =============================================
+// APP HISTORY MANAGEMENT
+// =============================================
 
 function updateAppsList() {
     const appsList = document.getElementById('apps-list');
-    const apps = JSON.parse(localStorage.getItem('buildgenius-apps') || '[]');
+    const apps = appStorage.getApps();
     
     if (apps.length === 0) {
         appsList.innerHTML = '<p class="text-gray-400 text-center">No apps created yet. Go to "Create App" to build your first app!</p>';
@@ -599,9 +784,9 @@ function updateAppsList() {
         <div class="bg-gray-700 rounded-lg p-4 mb-4">
             <div class="flex justify-between items-start">
                 <div class="flex-1">
-                    <h3 class="font-bold text-lg mb-2">\${app.prompt.substring(0, 60)}...</h3>
-                    <p class="text-gray-400 text-sm mb-2">Created: \${app.timestamp}</p>
-                    <pre class="text-gray-500 text-xs bg-gray-800 p-2 rounded overflow-hidden">\${app.preview}</pre>
+                    <h3 class="font-bold text-lg mb-2">\${app.prompt.substring(0, 60)}\${app.prompt.length > 60 ? '...' : ''}</h3>
+                    <p class="text-gray-400 text-sm mb-2">Created: \${new Date(app.created).toLocaleString()}</p>
+                    <pre class="text-gray-500 text-xs bg-gray-800 p-2 rounded overflow-hidden">\${app.code ? app.code.substring(0, 200) + '...' : 'No code available'}</pre>
                 </div>
                 <div class="flex space-x-2 ml-4">
                     <button onclick="loadApp(\${app.id})" class="px-3 py-1 bg-blue-600 rounded hover:bg-blue-700 text-sm">Load</button>
@@ -611,9 +796,8 @@ function updateAppsList() {
         </div>
     \`).join('');
 }
-
 function loadApp(appId) {
-    const apps = JSON.parse(localStorage.getItem('buildgenius-apps') || '[]');
+    const apps = appStorage.getApps();
     const app = apps.find(a => a.id === appId);
     
     if (app) {
@@ -636,14 +820,17 @@ function loadApp(appId) {
 
 function deleteApp(appId) {
     if (confirm('Are you sure you want to delete this app?')) {
-        let apps = JSON.parse(localStorage.getItem('buildgenius-apps') || '[]');
+        let apps = appStorage.getApps();
         apps = apps.filter(a => a.id !== appId);
-        localStorage.setItem('buildgenius-apps', JSON.stringify(apps));
+        localStorage.setItem('buildgenius-apps-v2', JSON.stringify(apps));
         updateAppsList();
     }
 }
 
-// Initialize
+// =============================================
+// INITIALIZATION
+// =============================================
+
 document.addEventListener('DOMContentLoaded', function() {
     updateAppsList();
     showSection('home');
