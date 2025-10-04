@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Workspace - BuildGenius</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        #editor { 
+            height: 70vh;
+            width: 100%;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+        }
+        .file-tree {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="flex items-center space-x-2 text-gray-300 hover:text-white">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Dashboard</span>
+                </a>
+                <h1 class="text-xl font-bold" id="project-title">Workspace</h1>
+            </div>
+            <div class="flex space-x-3">
+                <button class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-play"></i>
+                    <span>Run</span>
+                </button>
+                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>Save</span>
+                </button>
+                <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-rocket"></i>
+                    <span>Deploy</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex h-screen pt-16">
+        <!-- File Explorer Sidebar -->
+        <div class="w-64 bg-gray-800 border-r border-gray-700 p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-semibold">Explorer</h2>
+                <button class="text-gray-400 hover:text-white">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <div class="file-tree">
+                <div class="space-y-1">
+                    <div class="file-item flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer">
+                        <i class="fas fa-folder text-yellow-400"></i>
+                        <span>src</span>
+                    </div>
+                    <div class="file-item flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer ml-4">
+                        <i class="fas fa-file-code text-blue-400"></i>
+                        <span>index.html</span>
+                    </div>
+                    <div class="file-item flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer ml-4">
+                        <i class="fas fa-file-code text-blue-400"></i>
+                        <span>style.css</span>
+                    </div>
+                    <div class="file-item flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer ml-4">
+                        <i class="fas fa-file-code text-blue-400"></i>
+                        <span>script.js</span>
+                    </div>
+                    <div class="file-item flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer">
+                        <i class="fas fa-file text-gray-400"></i>
+                        <span>package.json</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Tools Section -->
+            <div class="mt-6 p-4 bg-gray-750 rounded-lg">
+                <h3 class="font-semibold mb-3">AI Tools</h3>
+                <div class="space-y-2">
+                    <button class="w-full text-left p-2 hover:bg-gray-700 rounded flex items-center space-x-2">
+                        <i class="fas fa-robot text-green-400"></i>
+                        <span>Generate Code</span>
+                    </button>
+                    <button class="w-full text-left p-2 hover:bg-gray-700 rounded flex items-center space-x-2">
+                        <i class="fas fa-bug text-red-400"></i>
+                        <span>Debug & Fix</span>
+                    </button>
+                    <button class="w-full text-left p-2 hover:bg-gray-700 rounded flex items-center space-x-2">
+                        <i class="fas fa-search text-blue-400"></i>
+                        <span>Optimize</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Editor Tabs -->
+            <div class="bg-gray-800 border-b border-gray-700 flex">
+                <div class="tab active px-4 py-2 border-b-2 border-blue-500 text-blue-400">index.html</div>
+                <div class="tab px-4 py-2 text-gray-400 hover:text-white">style.css</div>
+                <div class="tab px-4 py-2 text-gray-400 hover:text-white">script.js</div>
+            </div>
+
+            <!-- Monaco Editor -->
+            <div class="flex-1 p-4">
+                <div id="editor"></div>
+            </div>
+
+            <!-- Terminal -->
+            <div class="bg-gray-800 border-t border-gray-700">
+                <div class="flex border-b border-gray-700">
+                    <div class="px-4 py-2 border-b-2 border-green-500 text-green-400">Terminal</div>
+                    <div class="px-4 py-2 text-gray-400">Problems</div>
+                    <div class="px-4 py-2 text-gray-400">Output</div>
+                </div>
+                <div class="p-4 h-40 overflow-y-auto">
+                    <div class="text-green-400">$ npm start</div>
+                    <div class="text-gray-300">Server running on http://localhost:3000</div>
+                    <div class="text-gray-300">Build completed successfully</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Preview & AI -->
+        <div class="w-80 bg-gray-800 border-l border-gray-700 p-4">
+            <h3 class="font-semibold mb-4">Live Preview</h3>
+            <div class="bg-white rounded-lg overflow-hidden mb-6">
+                <iframe id="preview" class="w-full h-64 border-0"></iframe>
+            </div>
+
+            <!-- AI Chat -->
+            <div class="bg-gray-750 rounded-lg p-4">
+                <h4 class="font-semibold mb-3 flex items-center">
+                    <i class="fas fa-robot mr-2 text-green-400"></i>
+                    AI Assistant
+                </h4>
+                <div class="space-y-3">
+                    <input type="text" placeholder="Ask AI for help..." class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm">
+                    <button class="w-full bg-green-600 hover:bg-green-700 py-2 rounded text-sm">
+                        Generate Code
+                    </button>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded text-sm">
+                        Explain Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+        
+        require(['vs/editor/editor.main'], function() {
+            const editor = monaco.editor.create(document.getElementById('editor'), {
+                value: `<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to My App</h1>
+        <p>Built with BuildGenius AI</p>
+        <button onclick="alert('Hello World!')">Click Me</button>
+    </div>
+    <script>
+        console.log('App loaded successfully!');
+    <\/script>
+</body>
+</html>`,
+                language: 'html',
+                theme: 'vs-dark',
+                automaticLayout: true
+            });
+
+            // Update preview on changes
+            editor.onDidChangeModelContent(function() {
+                const preview = document.getElementById('preview');
+                preview.srcdoc = editor.getValue();
+            });
+
+            // Initial preview
+            document.getElementById('preview').srcdoc = editor.getValue();
+        });
+
+        // Handle tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active', 'border-blue-500', 'text-blue-400'));
+                this.classList.add('active', 'border-blue-500', 'text-blue-400');
+            });
+        });
+    </script>
+</body>
+                  </html>
