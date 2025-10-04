@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BuildGenius - Create Apps with AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
     <style>
         .typewriter {
@@ -23,6 +24,9 @@
             from, to { border-color: transparent }
             50% { border-color: #3B82F6; }
         }
+        .section {
+            transition: all 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-black min-h-screen text-white">
@@ -36,9 +40,18 @@
                 </h1>
             </div>
             <div class="flex space-x-4">
-                <button onclick="showSection('home')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition">Home</button>
-                <button onclick="showSection('create')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition">Create App</button>
-                <button onclick="showSection('my-apps')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition">My Apps</button>
+                <button onclick="showSection('home')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center">
+                    <i class="fas fa-home mr-2"></i>Home
+                </button>
+                <button onclick="showSection('create')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Create App
+                </button>
+                <button onclick="showSection('my-apps')" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center">
+                    <i class="fas fa-folder mr-2"></i>My Apps
+                </button>
+                <button onclick="window.location.href='chatbox.html'" class="px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600">
+                    <i class="fas fa-robot mr-2"></i>AI Assistant
+                </button>
             </div>
         </div>
     </nav>
@@ -57,26 +70,69 @@
                 </p>
                 
                 <div class="grid md:grid-cols-3 gap-6 mb-12">
-                    <div class="bg-gray-800 p-6 rounded-xl">
+                    <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition transform hover:scale-105">
                         <div class="text-3xl mb-4">💬</div>
                         <h3 class="text-xl font-bold mb-2">Describe</h3>
                         <p class="text-gray-400">Tell us what app you want in simple words</p>
                     </div>
-                    <div class="bg-gray-800 p-6 rounded-xl">
+                    <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition transform hover:scale-105">
                         <div class="text-3xl mb-4">⚡</div>
                         <h3 class="text-xl font-bold mb-2">Generate</h3>
                         <p class="text-gray-400">AI writes the code automatically</p>
                     </div>
-                    <div class="bg-gray-800 p-6 rounded-xl">
+                    <div class="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 transition transform hover:scale-105">
                         <div class="text-3xl mb-4">🌐</div>
                         <h3 class="text-xl font-bold mb-2">Deploy</h3>
                         <p class="text-gray-400">Go live instantly with one click</p>
                     </div>
                 </div>
 
-                <button onclick="showSection('create')" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105">
-                    Start Building Now - FREE
-                </button>
+                <div class="grid md:grid-cols-2 gap-6 mb-12">
+                    <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-6 rounded-xl">
+                        <h3 class="text-xl font-bold mb-3">🚀 New Feature!</h3>
+                        <p class="text-blue-100">Talk to our AI Assistant for personalized app development guidance and idea brainstorming!</p>
+                        <button onclick="window.location.href='chatbox.html'" class="mt-4 bg-white text-blue-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition">
+                            <i class="fas fa-robot mr-2"></i>Try AI Assistant
+                        </button>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-blue-500 p-6 rounded-xl">
+                        <h3 class="text-xl font-bold mb-3">🎯 Perfect For</h3>
+                        <ul class="text-green-100 text-left space-y-1">
+                            <li>• Startup MVPs</li>
+                            <li>• Portfolio Websites</li>
+                            <li>• Business Tools</li>
+                            <li>• Personal Projects</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="showSection('create')" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105 flex items-center">
+                        <i class="fas fa-bolt mr-2"></i>Start Building Now - FREE
+                    </button>
+                    <button onclick="window.location.href='chatbox.html'" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105 flex items-center">
+                        <i class="fas fa-robot mr-2"></i>Ask AI Assistant
+                    </button>
+                </div>
+
+                <div class="mt-12 grid md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-green-400">100%</div>
+                        <div class="text-gray-400">Free</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-400">0</div>
+                        <div class="text-gray-400">Coding Required</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-400">∞</div>
+                        <div class="text-gray-400">Possibilities</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-400">24/7</div>
+                        <div class="text-gray-400">AI Support</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -85,45 +141,67 @@
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-8 text-center">Create Your App</h2>
                 
-                <div class="bg-gray-800 rounded-xl p-6 mb-6">
-                    <label class="block text-lg font-medium mb-4">Describe your app in detail:</label>
+                <div class="bg-gray-800 rounded-xl p-6 mb-6 border border-gray-700">
+                    <label class="block text-lg font-medium mb-4">
+                        <i class="fas fa-edit mr-2 text-blue-400"></i>Describe your app in detail:
+                    </label>
                     <textarea 
                         id="app-prompt" 
-                        class="w-full h-48 p-4 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full h-48 p-4 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-600 resize-none"
                         placeholder="Example: Create a todo list app with dark theme, add/delete tasks, local storage, and beautiful UI. Make it responsive for mobile and desktop."
                     ></textarea>
                     
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <button onclick="insertTemplate('todo')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Todo App</button>
-                        <button onclick="insertTemplate('calculator')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Calculator</button>
-                        <button onclick="insertTemplate('weather')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Weather App</button>
-                        <button onclick="insertTemplate('portfolio')" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500">Portfolio Site</button>
+                        <button onclick="insertTemplate('todo')" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-500 transition flex items-center">
+                            <i class="fas fa-tasks mr-2"></i>Todo App
+                        </button>
+                        <button onclick="insertTemplate('calculator')" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-500 transition flex items-center">
+                            <i class="fas fa-calculator mr-2"></i>Calculator
+                        </button>
+                        <button onclick="insertTemplate('weather')" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-500 transition flex items-center">
+                            <i class="fas fa-cloud-sun mr-2"></i>Weather App
+                        </button>
+                        <button onclick="insertTemplate('portfolio')" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-500 transition flex items-center">
+                            <i class="fas fa-briefcase mr-2"></i>Portfolio Site
+                        </button>
+                    </div>
+
+                    <div class="mt-4 text-sm text-gray-400 flex items-center">
+                        <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>
+                        Need ideas? <button onclick="window.location.href='chatbox.html'" class="ml-1 text-blue-400 hover:text-blue-300 underline">Ask our AI Assistant</button>
                     </div>
                 </div>
 
                 <div class="text-center">
-                    <button onclick="generateApp()" class="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105 mb-4">
-                        🚀 Generate App with AI
+                    <button onclick="generateApp()" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105 mb-4 flex items-center mx-auto">
+                        <i class="fas fa-rocket mr-2"></i>Generate App with AI
                     </button>
-                    <p class="text-gray-400">No coding required. 100% free.</p>
+                    <p class="text-gray-400 flex items-center justify-center">
+                        <i class="fas fa-lock mr-2 text-green-400"></i>No coding required. 100% free.
+                    </p>
                 </div>
 
                 <!-- Results -->
                 <div id="result-section" class="hidden mt-8">
-                    <div class="bg-gray-800 rounded-xl p-6">
-                        <h3 class="text-2xl font-bold mb-4 text-green-400">✅ Your App is Ready!</h3>
-                        <div class="flex space-x-4 mb-4">
-                            <button onclick="downloadApp()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold">
-                                💾 Download Code
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-2xl font-bold mb-4 text-green-400 flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>Your App is Ready!
+                        </h3>
+                        <div class="flex flex-wrap gap-4 mb-4">
+                            <button onclick="downloadApp()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold transition flex items-center">
+                                <i class="fas fa-download mr-2"></i>Download Code
                             </button>
-                            <button onclick="previewApp()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-bold">
-                                👀 Preview App
+                            <button onclick="previewApp()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-bold transition flex items-center">
+                                <i class="fas fa-eye mr-2"></i>Preview App
                             </button>
-                            <button onclick="deployApp()" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-bold">
-                                🌐 Deploy Live
+                            <button onclick="deployApp()" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-bold transition flex items-center">
+                                <i class="fas fa-globe mr-2"></i>Deploy Live
+                            </button>
+                            <button onclick="copyCode()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-bold transition flex items-center">
+                                <i class="fas fa-copy mr-2"></i>Copy Code
                             </button>
                         </div>
-                        <div id="generated-code" class="bg-black p-4 rounded-lg overflow-auto max-h-96">
+                        <div id="generated-code" class="bg-black p-4 rounded-lg overflow-auto max-h-96 border border-gray-600">
                             <!-- Generated code will appear here -->
                         </div>
                     </div>
@@ -134,22 +212,94 @@
         <!-- My Apps Section -->
         <div id="my-apps-section" class="section hidden">
             <div class="max-w-4xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8 text-center">My Created Apps</h2>
-                <div id="apps-list" class="bg-gray-800 rounded-xl p-6">
-                    <p class="text-gray-400 text-center">No apps created yet. Go to "Create App" to build your first app!</p>
+                <h2 class="text-3xl font-bold mb-8 text-center flex items-center justify-center">
+                    <i class="fas fa-folder-open mr-3 text-yellow-400"></i>My Created Apps
+                </h2>
+                
+                <div class="mb-6 text-center">
+                    <p class="text-gray-400 mb-4">All your created apps are saved automatically in your browser</p>
+                    <button onclick="clearAllApps()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition flex items-center mx-auto">
+                        <i class="fas fa-trash mr-2"></i>Clear All Apps
+                    </button>
+                </div>
+
+                <div id="apps-list" class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <p class="text-gray-400 text-center flex items-center justify-center">
+                        <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+                        No apps created yet. Go to "Create App" to build your first app!
+                    </p>
+                </div>
+
+                <div class="mt-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2">Need Help or Ideas?</h3>
+                    <p class="text-purple-100 mb-4">Our AI Assistant can help you brainstorm and plan your next amazing app!</p>
+                    <button onclick="window.location.href='chatbox.html'" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition flex items-center mx-auto">
+                        <i class="fas fa-robot mr-2"></i>Chat with AI Assistant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="bg-gray-800 border-t border-gray-700 py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Why Choose BuildGenius?</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-bold mb-3">AI Powered</h3>
+                    <p class="text-gray-400">Advanced AI models generate professional-quality code instantly</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold mb-3">Lightning Fast</h3>
+                    <p class="text-gray-400">Create and deploy apps in minutes, not days</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold mb-3">Beginner Friendly</h3>
+                    <p class="text-gray-400">No coding experience required. Just describe and build!</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-12 py-8">
-        <div class="container mx-auto px-4 text-center text-gray-400">
-            <p>Built with ❤️ by BuildGenius | AI-Powered App Development</p>
-            <p class="mt-2">100% Free • No Coding Required • Instant Deployment</p>
+    <footer class="border-t border-gray-800 py-8 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center md:text-left mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2 justify-center md:justify-start">
+                        <span class="text-2xl">🚀</span>
+                        <h2 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                            BuildGenius
+                        </h2>
+                    </div>
+                    <p class="text-gray-400 mt-2">Build Apps with AI. Zero Coding Required.</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <button onclick="showSection('home')" class="text-gray-400 hover:text-white transition">Home</button>
+                    <button onclick="showSection('create')" class="text-gray-400 hover:text-white transition">Create App</button>
+                    <button onclick="window.location.href='chatbox.html'" class="text-gray-400 hover:text-white transition">AI Assistant</button>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-6 pt-6 text-center">
+                <p class="text-gray-400">
+                    Built with ❤️ using AI | 
+                    <span class="text-green-400">100% Free</span> • 
+                    <span class="text-blue-400">No Coding</span> • 
+                    <span class="text-purple-400">Instant Deployment</span>
+                </p>
+                <p class="text-gray-500 text-sm mt-2">
+                    © 2024 BuildGenius. All rights reserved.
+                </p>
+            </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
 </body>
-</html>
+    </html>
