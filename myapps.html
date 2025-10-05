@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-900 text-white">
-    <!-- Navigation -->
     <nav class="bg-gray-800 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -26,83 +25,14 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container mx-auto p-8 max-w-4xl">
         <h1 class="text-4xl font-bold mb-8 text-center">My Created Apps</h1>
-        
-        <div class="bg-gray-800 rounded-xl p-8 border border-gray-700">
-            <div id="apps-list" class="space-y-6">
-                <!-- Sample App 1 -->
-                <div class="bg-gray-700 p-6 rounded-lg border border-gray-600">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-xl font-semibold">Todo List App</h3>
-                            <p class="text-gray-400">Created: 2 hours ago</p>
-                        </div>
-                        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">Live</span>
-                    </div>
-                    <p class="text-gray-300 mb-4">A beautiful todo app with dark theme and local storage</p>
-                    <div class="flex space-x-3">
-                        <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-eye mr-2"></i>Preview
-                        </button>
-                        <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-download mr-2"></i>Download
-                        </button>
-                        <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-rocket mr-2"></i>Deploy
-                        </button>
-                        <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-trash mr-2"></i>Delete
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Sample App 2 -->
-                <div class="bg-gray-700 p-6 rounded-lg border border-gray-600">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-xl font-semibold">Weather Dashboard</h3>
-                            <p class="text-gray-400">Created: 1 day ago</p>
-                        </div>
-                        <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm">Draft</span>
-                    </div>
-                    <p class="text-gray-300 mb-4">Weather app with forecasts and location search</p>
-                    <div class="flex space-x-3">
-                        <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-eye mr-2"></i>Preview
-                        </button>
-                        <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-download mr-2"></i>Download
-                        </button>
-                        <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-rocket mr-2"></i>Deploy
-                        </button>
-                        <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-trash mr-2"></i>Delete
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Empty State -->
-                <div id="empty-state" class="text-center py-12">
-                    <div class="text-6xl mb-4">📱</div>
-                    <h3 class="text-xl font-semibold mb-2">No Apps Created Yet</h3>
-                    <p class="text-gray-400 mb-6">Start building your first app with AI</p>
-                    <a href="create.html" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition inline-block">
-                        <i class="fas fa-plus mr-2"></i>Create Your First App
-                    </a>
-                </div>
-            </div>
+        <div class="bg-gray-800 rounded-xl p-8 border border-gray-700 text-center">
+            <p class="text-gray-400">Your created apps will appear here</p>
+            <a href="create.html" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition inline-block mt-4">
+                <i class="fas fa-plus mr-2"></i>Create Your First App
+            </a>
         </div>
     </div>
-
-    <script>
-        // Hide empty state if there are apps
-        const apps = document.querySelectorAll('.bg-gray-700');
-        if (apps.length > 0) {
-            document.getElementById('empty-state').style.display = 'none';
-        }
-    </script>
 </body>
-                  </html>
+</html>
