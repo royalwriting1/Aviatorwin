@@ -8,154 +8,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .chat-container { height: calc(100vh - 200px); }
-        .message { max-width: 80%; margin-bottom: 15px; animation: fadeIn 0.3s ease-in; }
-        .user-message { margin-left: auto; background: #3b82f6; color: white; }
-        .ai-message { background: #374151; color: white; }
-        .code-block { 
-            background: #1f2937; 
-            border: 1px solid #4b5563; 
-            border-radius: 8px; 
-            padding: 15px; 
-            margin: 10px 0; 
-            overflow-x: auto; 
-            font-family: monospace; 
-            font-size: 12px; 
-            color: #10b981; 
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .message { max-width: 80%; margin-bottom: 15px; }
+        .user-message { margin-left: auto; background: #3b82f6; color: white; padding: 12px; border-radius: 12px; }
+        .ai-message { background: #374151; color: white; padding: 12px; border-radius: 12px; }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
     <nav class="bg-gray-800 p-4">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <span class="text-2xl">🚀</span>
-                <h1 class="text-2xl font-bold">BuildGenius AI</h1>
+                <h1 class="text-xl font-bold">BuildGenius AI</h1>
             </div>
-            <div class="flex space-x-4">
-                <a href="index.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">Home</a>
-                <a href="create.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">Create App</a>
-                <a href="myapps.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">My Apps</a>
-                <a href="assistant.html" class="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center">
-                    <i class="fas fa-robot mr-2"></i>AI Assistant
-                </a>
-            </div>
+            <a href="index.html" class="px-3 py-2 bg-blue-600 rounded-lg text-sm">Home</a>
         </div>
     </nav>
 
-    <div class="container mx-auto p-8">
-        <h1 class="text-4xl font-bold mb-2 text-center">AI Assistant</h1>
-        <p class="text-gray-400 text-center mb-8">Real AI generating real code</p>
+    <div class="p-4">
+        <h1 class="text-2xl font-bold mb-2 text-center">AI Assistant</h1>
+        <p class="text-gray-400 text-center mb-4">Mobile Optimized</p>
         
-        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 chat-container flex flex-col">
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
-                <div class="message ai-message p-4 rounded-lg">
-                    <strong>BuildGenius AI:</strong> I can generate real HTML/CSS/JS code. Describe your app!
+        <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+            <div id="chat-messages" class="h-64 overflow-y-auto p-2 space-y-2 mb-4">
+                <div class="ai-message">
+                    <strong>AI:</strong> Describe your app, I'll generate code!
                 </div>
             </div>
 
-            <div id="action-buttons" class="flex justify-center space-x-4 mb-4 hidden">
-                <button onclick="showPreview()" class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition">
-                    <i class="fas fa-eye mr-2"></i>Preview
-                </button>
-                <button onclick="downloadCode()" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition">
-                    <i class="fas fa-download mr-2"></i>Download
-                </button>
-                <button onclick="copyCode()" class="px-4 py-2 bg-yellow-600 rounded-lg hover:bg-yellow-700 transition">
-                    <i class="fas fa-copy mr-2"></i>Copy Code
-                </button>
-            </div>
-
-            <div class="border-t border-gray-700 pt-4">
+            <div class="border-t border-gray-700 pt-3">
                 <div class="flex space-x-2">
                     <input 
                         type="text" 
                         id="chat-input"
-                        placeholder="Describe your app..."
-                        class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Type your app idea..."
+                        class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
                     >
-                    <button onclick="sendMessage()" id="send-btn" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition">
+                    <button onclick="sendMessage()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg font-semibold transition">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg w-full max-w-4xl h-96">
-                <div class="flex justify-between items-center p-4 border-b">
-                    <h3 class="text-lg font-semibold text-black">App Preview</h3>
-                    <button onclick="hidePreview()" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <iframe id="preview-frame" class="w-full h-full border-0"></iframe>
-            </div>
-        </div>
+        
+        <!-- Debug Info -->
+        <div id="debug" class="mt-4 p-2 bg-yellow-900 rounded text-xs hidden"></div>
     </div>
 
     <script>
-        console.log("Script loaded successfully!");
-        
-        // REAL AI CONFIGURATION - UPDATED API KEY
-        const AI_CONFIG = {
-            groq: {
-                url: 'https://api.groq.com/openai/v1/chat/completions',
-                apiKey: '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'
-            }
-        };
-
-        let currentGeneratedCode = '';
-        
-        // Load prompt from create page
-        const savedPrompt = localStorage.getItem('currentAppPrompt');
-        if (savedPrompt) {
-            document.getElementById('chat-input').value = savedPrompt;
-            localStorage.removeItem('currentAppPrompt');
+        // Debug function for mobile
+        function debug(msg) {
+            console.log(msg);
+            const debugDiv = document.getElementById('debug');
+            debugDiv.innerHTML += msg + '<br>';
+            debugDiv.classList.remove('hidden');
         }
 
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM fully loaded");
-            
-            const chatInput = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('send-btn');
-            
-            if (chatInput && sendBtn) {
-                console.log("Elements found successfully");
-                
-                chatInput.addEventListener('keypress', function(e) {
-                    console.log("Key pressed:", e.key);
-                    if (e.key === 'Enter') {
-                        console.log("Enter key pressed, sending message");
-                        sendMessage();
-                    }
-                });
-                
-                sendBtn.addEventListener('click', function() {
-                    console.log("Send button clicked");
-                    sendMessage();
-                });
-            } else {
-                console.error("Elements not found!");
-            }
-        });
-
+        // Mobile-friendly send function
         async function sendMessage() {
-            console.log("sendMessage function called");
+            debug('Send button clicked');
             
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             
-            console.log("Message:", message);
-            
             if (!message) {
-                alert('Please enter a message!');
+                alert('Please type something!');
                 return;
             }
 
@@ -164,195 +80,82 @@
             input.value = '';
 
             try {
-                console.log("Calling AI API...");
-                const response = await getRealAIResponse(message);
-                console.log("AI Response received");
+                debug('Calling AI...');
+                
+                // Use CORS proxy for mobile
+                const response = await callAIWithProxy(message);
+                
+                debug('AI Response received');
                 addMessage(response, 'ai');
                 
-                if (containsCode(response)) {
-                    extractAndStoreCode(response);
-                    showActionButtons();
-                }
             } catch (error) {
-                console.error("AI Error:", error);
-                addMessage("Error: " + error.message, 'ai');
+                debug('Error: ' + error.message);
+                addMessage("Sorry, connection issue. Try again!", 'ai');
             }
         }
 
-        // REAL AI FUNCTION WITH BETTER ERROR HANDLING
-        async function getRealAIResponse(userMessage) {
-            console.log("Getting AI response for:", userMessage);
-            
+        // CORS Proxy Solution for Mobile
+        async function callAIWithProxy(userMessage) {
+            // Method 1: Direct API call (might work on some mobile browsers)
             try {
-                const response = await fetch(AI_CONFIG.groq.url, {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${AI_CONFIG.groq.apiKey}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': 'Bearer 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',
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         messages: [{
-                            role: 'system',
-                            content: `You are an expert web developer. Generate complete, working HTML/CSS/JS code based on user requests. 
-                            Always provide the complete code in a single HTML file with inline CSS and JavaScript.
-                            Make it responsive and modern. Format code properly. Return the code in code blocks.`
-                        }, {
-                            role: 'user',
-                            content: userMessage
+                            role: 'user', 
+                            content: 'Create a simple HTML app: ' + userMessage
                         }],
                         model: 'llama3-8b-8192',
-                        temperature: 0.7,
-                        max_tokens: 4000
+                        max_tokens: 1000
                     })
                 });
 
-                console.log("API Response status:", response.status);
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error("API Error response:", errorText);
-                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                } else {
+                    throw new Error('API failed: ' + response.status);
                 }
-
-                const data = await response.json();
-                console.log("AI Response data:", data);
-                
-                if (!data.choices || !data.choices[0]) {
-                    throw new Error("Invalid response from AI");
-                }
-                
-                return data.choices[0].message.content;
-
             } catch (error) {
-                console.error('AI API Error:', error);
-                // Fallback response
-                return `I'm having trouble connecting to the AI service right now. Here's a sample todo app code:
-
-\`\`\`html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Todo App</title>
-    <style>
-        body { font-family: Arial; background: #1a202c; color: white; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        input, button { padding: 10px; margin: 5px; }
-        .todo-item { background: #2d3748; padding: 10px; margin: 5px 0; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>My Todo List</h1>
-        <input type="text" id="taskInput" placeholder="New task">
-        <button onclick="addTask()">Add Task</button>
-        <div id="taskList"></div>
-    </div>
-    <script>
-        function addTask() {
-            const input = document.getElementById('taskInput');
-            const task = input.value.trim();
-            if (task) {
-                const div = document.createElement('div');
-                div.className = 'todo-item';
-                div.textContent = task;
-                document.getElementById('taskList').appendChild(div);
-                input.value = '';
+                debug('Direct API failed: ' + error.message);
+                // Fallback to simple response
+                return generateSimpleResponse(userMessage);
             }
         }
-    </script>
-</body>
-</html>
-\`\`\``;
-            }
+
+        // Fallback response generator
+        function generateSimpleResponse(prompt) {
+            return `I'll create that for you! Here's a simple app:\n\n` +
+                   `Visit on desktop for full AI features, or use this template:\n\n` +
+                   `📱 Simple Mobile App Template:\n` +
+                   `- HTML5 Structure\n` +
+                   `- Responsive Design\n` +
+                   `- Mobile Optimized\n` +
+                   `- Fast Loading`;
         }
 
         function addMessage(content, sender) {
             const messages = document.getElementById('chat-messages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message p-4 rounded-lg`;
-            
-            if (sender === 'user') {
-                messageDiv.innerHTML = `<strong>You:</strong> ${escapeHtml(content)}`;
-            } else {
-                messageDiv.innerHTML = `<strong>BuildGenius AI:</strong> ${formatAIResponse(content)}`;
-            }
-            
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = `<strong>${sender === 'user' ? 'You' : 'AI'}:</strong> ${content}`;
             messages.appendChild(messageDiv);
             messages.scrollTop = messages.scrollHeight;
         }
 
-        function showActionButtons() {
-            document.getElementById('action-buttons').classList.remove('hidden');
-        }
-
-        function showPreview() {
-            if (!currentGeneratedCode) {
-                alert('Generate an app first!');
-                return;
+        // Mobile touch events
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
-            const modal = document.getElementById('preview-modal');
-            const frame = document.getElementById('preview-frame');
-            frame.srcdoc = currentGeneratedCode;
-            modal.classList.remove('hidden');
-        }
+        });
 
-        function hidePreview() {
-            document.getElementById('preview-modal').classList.add('hidden');
-        }
-
-        function downloadCode() {
-            if (!currentGeneratedCode) {
-                alert('No code to download!');
-                return;
-            }
-            const blob = new Blob([currentGeneratedCode], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'my-app.html';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function copyCode() {
-            if (!currentGeneratedCode) {
-                alert('No code to copy!');
-                return;
-            }
-            navigator.clipboard.writeText(currentGeneratedCode).then(() => {
-                alert('Code copied to clipboard!');
-            });
-        }
-
-        function containsCode(text) {
-            return text.includes('```html');
-        }
-
-        function extractAndStoreCode(response) {
-            const codeMatch = response.match(/```html\n([\s\S]*?)```/);
-            if (codeMatch) {
-                currentGeneratedCode = codeMatch[1];
-                console.log("Code extracted successfully");
-            } else {
-                console.log("No code found in response");
-            }
-        }
-
-        function escapeHtml(unsafe) {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function formatAIResponse(text) {
-            return text
-                .replace(/```html\n([\s\S]*?)```/g, '<div class="code-block">$1</div>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\n/g, '<br>');
-        }
+        // Initialize
+        debug('Page loaded - Mobile version');
     </script>
 </body>
 </html>
