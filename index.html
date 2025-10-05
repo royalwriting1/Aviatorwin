@@ -7,72 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .ai-chatbox {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 400px;
-            height: 600px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-        }
-        .chat-header {
+        .hero-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 15px 15px 0 0;
         }
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #f8f9fa;
-        }
-        .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 80%;
-        }
-        .user-message {
-            background: #007bff;
-            color: white;
-            margin-left: auto;
-        }
-        .ai-message {
-            background: white;
-            border: 1px solid #e0e0e0;
-        }
-        .chat-input {
-            padding: 15px;
-            border-top: 1px solid #e0e0e0;
-        }
-        .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        .preview-window {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            z-index: 1001;
-            display: none;
+        .feature-card:hover {
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -85,120 +25,76 @@
                 <h1 class="text-2xl font-bold">BuildGenius AI</h1>
             </div>
             <div class="flex space-x-4">
-                <button class="px-4 py-2 bg-blue-600 rounded-lg">Home</button>
-                <button class="px-4 py-2 bg-green-600 rounded-lg">Create App</button>
-                <button class="px-4 py-2 bg-purple-600 rounded-lg">My Apps</button>
-                <button onclick="toggleChatbox()" class="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center">
+                <a href="index.html" class="px-4 py-2 bg-blue-600 rounded-lg">Home</a>
+                <a href="create.html" class="px-4 py-2 bg-green-600 rounded-lg">Create App</a>
+                <a href="myapps.html" class="px-4 py-2 bg-purple-600 rounded-lg">My Apps</a>
+                <a href="assistant.html" class="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center">
                     <i class="fas fa-robot mr-2"></i>AI Assistant
-                </button>
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container mx-auto p-8">
-        <div class="text-center max-w-4xl mx-auto">
-            <h1 class="text-5xl font-bold mb-6">Create Complete Apps with AI</h1>
-            <p class="text-xl text-gray-300 mb-8">Describe your app. Get code. Preview. Deploy. All in one place.</p>
-            
-            <div class="grid md:grid-cols-4 gap-6 mb-12">
-                <div class="bg-gray-800 p-6 rounded-xl">
-                    <div class="text-3xl mb-4">💬</div>
-                    <h3 class="text-xl font-bold mb-2">Describe</h3>
-                    <p class="text-gray-400">Tell AI what app you want</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-xl">
-                    <div class="text-3xl mb-4">⚡</div>
-                    <h3 class="text-xl font-bold mb-2">Generate</h3>
-                    <p class="text-gray-400">AI writes complete code</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-xl">
-                    <div class="text-3xl mb-4">👁️</div>
-                    <h3 class="text-xl font-bold mb-2">Preview</h3>
-                    <p class="text-gray-400">Live preview instantly</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-xl">
-                    <div class="text-3xl mb-4">🚀</div>
-                    <h3 class="text-xl font-bold mb-2">Deploy</h3>
-                    <p class="text-gray-400">One-click hosting</p>
-                </div>
-            </div>
-
-            <button onclick="toggleChatbox()" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-8 py-4 rounded-lg text-xl font-bold transition transform hover:scale-105">
-                <i class="fas fa-robot mr-2"></i>Start Building with AI - FREE
-            </button>
-        </div>
-    </div>
-
-    <!-- AI Chatbox -->
-    <div id="ai-chatbox" class="ai-chatbox">
-        <div class="chat-header">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <h3 class="font-semibold">BuildGenius AI Assistant</h3>
-                </div>
-                <button onclick="toggleChatbox()" class="text-white hover:text-gray-200">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Hero Section -->
+    <section class="hero-gradient py-20">
+        <div class="container mx-auto text-center px-4">
+            <h1 class="text-6xl font-bold mb-6">Create Complete Apps with AI</h1>
+            <p class="text-xl mb-8 opacity-90">Describe your app. Get code. Preview. Deploy. All in one place</p>
+            <div class="flex justify-center space-x-4">
+                <a href="create.html" class="bg-white text-purple-600 px-8 py-4 rounded-lg text-xl font-bold hover:bg-gray-100 transition">
+                    <i class="fas fa-bolt mr-2"></i>Start Building
+                </a>
+                <a href="assistant.html" class="bg-black bg-opacity-50 text-white px-8 py-4 rounded-lg text-xl font-bold hover:bg-opacity-70 transition">
+                    <i class="fas fa-robot mr-2"></i>AI Assistant
+                </a>
             </div>
         </div>
+    </section>
 
-        <div id="chat-messages" class="chat-messages">
-            <div class="message ai-message">
-                <strong>BuildGenius AI:</strong> Hello! I can help you create complete apps. Describe what you want to build and I'll generate the code! 🚀
-            </div>
-        </div>
-
-        <div class="chat-input">
-            <div class="flex space-x-2 mb-2">
-                <input type="file" id="image-upload" accept="image/*" class="hidden">
-                <button onclick="document.getElementById('image-upload').click()" class="px-3 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300">
-                    <i class="fas fa-image"></i>
-                </button>
-                <button onclick="generateSampleApp()" class="px-3 py-2 bg-blue-500 rounded-lg text-white hover:bg-blue-600">
-                    <i class="fas fa-magic"></i> Sample
-                </button>
-                <button onclick="clearChat()" class="px-3 py-2 bg-red-500 rounded-lg text-white hover:bg-red-600">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            <div class="flex space-x-2">
-                <input 
-                    type="text" 
-                    id="chat-input"
-                    placeholder="Describe your app (e.g., 'Create a todo app with dark theme')..."
-                    class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                    onkeypress="handleChatInput(event)"
-                >
-                <button onclick="sendMessage()" class="px-4 py-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg text-white font-semibold">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Preview Window -->
-    <div id="preview-window" class="preview-window">
-        <div class="chat-header">
-            <div class="flex justify-between items-center">
-                <h3 class="font-semibold">App Preview</h3>
-                <div class="flex space-x-2">
-                    <button onclick="downloadCode()" class="px-3 py-1 bg-green-500 rounded-lg text-white text-sm">
-                        <i class="fas fa-download mr-1"></i>Download
-                    </button>
-                    <button onclick="deployApp()" class="px-3 py-1 bg-purple-500 rounded-lg text-white text-sm">
-                        <i class="fas fa-rocket mr-1"></i>Deploy
-                    </button>
-                    <button onclick="togglePreview()" class="text-white hover:text-gray-200">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <!-- Features Section -->
+    <section class="py-20 bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">How It Works</h2>
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="feature-card bg-gray-700 p-8 rounded-xl text-center">
+                    <div class="text-4xl mb-4">💬</div>
+                    <h3 class="text-xl font-bold mb-4">Describe</h3>
+                    <p class="text-gray-300">Tell AI what app you want in simple words</p>
+                </div>
+                <div class="feature-card bg-gray-700 p-8 rounded-xl text-center">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold mb-4">Generate</h3>
+                    <p class="text-gray-300">AI writes complete code automatically</p>
+                </div>
+                <div class="feature-card bg-gray-700 p-8 rounded-xl text-center">
+                    <div class="text-4xl mb-4">👁️</div>
+                    <h3 class="text-xl font-bold mb-4">Preview</h3>
+                    <p class="text-gray-300">See your app live before deploying</p>
+                </div>
+                <div class="feature-card bg-gray-700 p-8 rounded-xl text-center">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h3 class="text-xl font-bold mb-4">Deploy</h3>
+                    <p class="text-gray-300">One-click hosting and deployment</p>
                 </div>
             </div>
         </div>
-        <iframe id="preview-frame" class="w-full h-full border-0"></iframe>
-    </div>
+    </section>
 
-    <script src="script.js"></script>
+    <!-- CTA Section -->
+    <section class="py-20 bg-gray-900">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-4xl font-bold mb-8">Ready to Build Your App?</h2>
+            <a href="create.html" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-12 py-6 rounded-lg text-2xl font-bold transition inline-block">
+                <i class="fas fa-rocket mr-2"></i>Start Creating Now - FREE
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-8 border-t border-gray-700">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 BuildGenius AI. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
