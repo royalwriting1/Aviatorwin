@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create App - BuildGenius</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🚀</span>
+                <h1 class="text-2xl font-bold">BuildGenius AI</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="index.html" class="px-4 py-2 bg-blue-600 rounded-lg">Home</a>
+                <a href="create.html" class="px-4 py-2 bg-green-600 rounded-lg">Create App</a>
+                <a href="myapps.html" class="px-4 py-2 bg-purple-600 rounded-lg">My Apps</a>
+                <a href="assistant.html" class="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center">
+                    <i class="fas fa-robot mr-2"></i>AI Assistant
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-8 max-w-4xl">
+        <h1 class="text-4xl font-bold mb-8 text-center">Create Your App</h1>
+        
+        <div class="bg-gray-800 rounded-xl p-8 border border-gray-700">
+            <label class="block text-lg font-medium mb-4">
+                <i class="fas fa-edit mr-2 text-blue-400"></i>Describe your app in detail:
+            </label>
+            <textarea 
+                id="app-prompt" 
+                class="w-full h-48 p-4 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-600 resize-none"
+                placeholder="Example: Create a todo list app with dark theme, add/delete tasks, local storage, and beautiful UI. Make it responsive for mobile and desktop."
+            ></textarea>
+            
+            <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                <button onclick="generateApp()" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-8 py-4 rounded-lg text-xl font-bold transition">
+                    <i class="fas fa-rocket mr-2"></i>Generate App with AI
+                </button>
+                <a href="assistant.html" class="bg-purple-600 hover:bg-purple-700 px-8 py-4 rounded-lg text-xl font-bold transition">
+                    <i class="fas fa-robot mr-2"></i>Get AI Help
+                </a>
+            </div>
+
+            <!-- Quick Templates -->
+            <div class="mt-8">
+                <h3 class="text-lg font-medium mb-4">Quick Templates:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="loadTemplate('todo')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition text-left">
+                        <div class="text-2xl mb-2">✅</div>
+                        <h4 class="font-semibold">Todo App</h4>
+                        <p class="text-sm text-gray-400">Task management with local storage</p>
+                    </button>
+                    <button onclick="loadTemplate('calculator')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition text-left">
+                        <div class="text-2xl mb-2">🧮</div>
+                        <h4 class="font-semibold">Calculator</h4>
+                        <p class="text-sm text-gray-400">Scientific calculator with functions</p>
+                    </button>
+                    <button onclick="loadTemplate('weather')" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition text-left">
+                        <div class="text-2xl mb-2">🌤️</div>
+                        <h4 class="font-semibold">Weather App</h4>
+                        <p class="text-sm text-gray-400">Current weather and forecasts</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadTemplate(type) {
+            const templates = {
+                todo: "Create a beautiful todo list app with dark theme, add/delete tasks, local storage, and responsive design",
+                calculator: "Create a scientific calculator with basic operations, scientific functions, and beautiful modern UI",
+                weather: "Create a weather app with current temperature, 5-day forecast, location search, and beautiful gradients"
+            };
+            document.getElementById('app-prompt').value = templates[type] || '';
+        }
+
+        function generateApp() {
+            const prompt = document.getElementById('app-prompt').value;
+            if (!prompt.trim()) {
+                alert('Please describe your app first!');
+                return;
+            }
+            
+            // Redirect to assistant page with the prompt
+            localStorage.setItem('currentAppPrompt', prompt);
+            window.location.href = 'assistant.html';
+        }
+    </script>
+</body>
+</html>
