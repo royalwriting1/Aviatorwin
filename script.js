@@ -1,215 +1,360 @@
-// =============================================
-// SECURE API CONFIGURATION
-// =============================================
+// Chat History Storage
+let chatHistory = JSON.parse(localStorage.getItem('buildgenius_chat_history')) || [];
+let currentGeneratedCode = '';
 
-const getSecureAPIKey = (type) => {
-    const keys = {
-        gemini: 'AIzaSy' + 'DTNvluhe9U8xlgaFCe8jUNUjBIZrRtihw',
-        groq: 'gsk_' + '8aA88Im2UcwTqYhQQIDyWGdyb3FYhtQoo6JpY9HzAPQUKzKOrqcS'
-    };
-    return keys[type];
-};
-
-const API_CONFIG = {
-    gemini: {
-        url: 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'
-    },
-    groq: {
-        url: 'https://api.groq.com/openai/v1/chat/completions'
-    }
-};
-
-// =============================================
-// SIDEBAR MANAGEMENT
-// =============================================
-
-function toggleChatSidebar() {
-    const sidebar = document.getElementById('chat-sidebar');
-    const overlay = document.getElementById('overlay');
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('hidden');
+// Toggle Chatbox
+function toggleChatbox() {
+    const chatbox = document.getElementById('ai-chatbox');
+    chatbox.style.display = chatbox.style.display === 'flex' ? 'none' : 'flex';
+    loadChatHistory();
 }
 
-function togglePreviewWindow() {
+// Toggle Preview
+function togglePreview() {
     const preview = document.getElementById('preview-window');
-    const overlay = document.getElementById('overlay');
-    preview.classList.toggle('open');
-    overlay.classList.toggle('hidden');
-    
-    // Load preview if opening
-    if (preview.classList.contains('open') && currentGeneratedCode) {
-        const previewFrame = document.getElementById('preview-frame');
-        previewFrame.srcdoc = currentGeneratedCode;
-    }
+    preview.style.display = preview.style.display === 'block' ? 'none' : 'block';
 }
 
-function closeAllPanels() {
-    document.getElementById('chat-sidebar').classList.remove('open');
-    document.getElementById('preview-window').classList.remove('open');
-    document.getElementById('overlay').classList.add('hidden');
-}
-
-// =============================================
-// CHAT FUNCTIONALITY
-// =============================================
-
-function addChatMessage(content, isUser = false) {
-    const chatMessages = document.getElementById('chat-messages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message-bubble ${isUser ? 'user-message bg-blue-600' : 'bg-gray-700'} rounded-2xl p-4`;
-    
-    if (isUser) {
-        messageDiv.innerHTML = `
-            <div class="flex items-start space-x-3 justify-end">
-                <div class="flex-1 text-right">
-                    <p class="font-semibold text-blue-300 text-sm">You</p>
-                    <p class="text-white mt-1 text-sm">${escapeHtml(content)}</p>
-                </div>
-                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user text-white text-sm"></i>
-                </div>
-            </div>
-        `;
-    } else {
-        messageDiv.innerHTML = `
-            <div class="flex items-start space-x-3">
-                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <i class="fas fa-robot text-white text-sm"></i>
-                </div>
-                <div class="flex-1">
-                    <p class="font-semibold text-green-400 text-sm">BuildGenius AI</p>
-                    <div class="text-gray-200 mt-1 text-sm">${formatAIResponse(content)}</div>
-                </div>
-            </div>
-        `;
-    }
-    
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function showChatTyping() {
-    document.getElementById('typing-indicator').classList.remove('hidden');
-}
-
-function hideChatTyping() {
-    document.getElementById('typing-indicator').classList.add('hidden');
-}
-
-function handleChatKeyPress(event) {
+// Handle Chat Input
+function handleChatInput(event) {
     if (event.key === 'Enter') {
-        sendChatMessage();
+        sendMessage();
     }
 }
 
-async function sendChatMessage() {
+// Send Message to AI
+async function sendMessage() {
     const input = document.getElementById('chat-input');
     const message = input.value.trim();
     if (!message) return;
-    
+
+    // Add user message
+    addMessage(message, 'user');
     input.value = '';
-    addChatMessage(message, true);
-    showChatTyping();
-    
+
+    // Show typing indicator
+    showTyping();
+
+    // Get AI response
     try {
         const response = await getAIResponse(message);
-        addChatMessage(response, false);
+        addMessage(response, 'ai');
+        
+        // Check if response contains code
+        if (containsCode(response)) {
+            extractAndShowCode(response);
+        }
+        
+        // Save to history
+        saveToHistory(message, response);
     } catch (error) {
-        addChatMessage("I'm having trouble connecting. Please try again!", false);
+        addMessage("Sorry, I'm having trouble connecting. Please try again!", 'ai');
     }
-    
-    hideChatTyping();
+
+    hideTyping();
 }
 
-// =============================================
-// AI RESPONSE GENERATION (Same as before)
-// =============================================
-
-async function getAIResponse(message) {
+// AI Response Generator
+async function getAIResponse(userMessage) {
+    // Free AI APIs - No cost involved
     try {
-        const groqResponse = await tryGroqChat(message);
-        if (groqResponse) return groqResponse;
-        
-        const geminiResponse = await tryGeminiChat(message);
-        if (geminiResponse) return geminiResponse;
-        
-        return getFallbackResponse(message);
-    } catch (error) {
-        return getFallbackResponse(message);
-    }
-}
-
-async function tryGroqChat(message) {
-    try {
-        const apiKey = getSecureAPIKey('groq');
-        const response = await fetch(API_CONFIG.groq.url, {
+        // Try Groq AI first (completely free)
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                'Authorization': 'Bearer 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',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 messages: [{
                     role: 'user',
-                    content: `As BuildGenius AI, help with app development: ${message}`
+                    content: `As a code generation expert, create complete HTML/CSS/JS code for: ${userMessage}. 
+                    Provide ready-to-use code with comments. Make it responsive and modern.`
                 }],
                 model: 'llama3-8b-8192',
                 temperature: 0.7,
-                max_tokens: 500
+                max_tokens: 2000
             })
         });
-        
-        if (!response.ok) return null;
-        const data = await response.json();
-        return data.choices[0].message.content;
+
+        if (groqResponse.ok) {
+            const data = await groqResponse.json();
+            return data.choices[0].message.content;
+        }
     } catch (error) {
-        return null;
+        console.log('Groq failed, using fallback');
     }
+
+    // Fallback: Generate code based on keywords
+    return generateFallbackCode(userMessage);
 }
 
-async function tryGeminiChat(message) {
-    try {
-        const apiKey = getSecureAPIKey('gemini');
-        const response = await fetch(`${API_CONFIG.gemini.url}?key=${apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `As BuildGenius AI, help with: ${message}`
-                    }]
-                }]
-            })
-        });
+// Generate Code Based on User Request
+function generateFallbackCode(description) {
+    const lowerDesc = description.toLowerCase();
+    
+    if (lowerDesc.includes('todo') || lowerDesc.includes('task')) {
+        return `Here's your Todo List App:\n\n\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a202c; 
+            color: white;
+            padding: 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .input-section { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { 
+            flex: 1; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 8px;
+            background: #2d3748;
+            color: white;
+        }
+        button { 
+            padding: 12px 20px; 
+            background: #4299e1; 
+            color: white; 
+            border: none; 
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .todo-item { 
+            background: #2d3748; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        .delete-btn { 
+            background: #e53e3e; 
+            padding: 5px 10px; 
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Todo List</h1>
+        </div>
+        <div class="input-section">
+            <input type="text" id="todoInput" placeholder="Add a new task...">
+            <button onclick="addTodo()">Add</button>
+        </div>
+        <div id="todoList"></div>
+    </div>
+
+    <script>
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
         
-        if (!response.ok) return null;
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    } catch (error) {
-        return null;
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = todos.map((todo, index) => \`
+                <div class="todo-item">
+                    <span>\${todo}</span>
+                    <button class="delete-btn" onclick="deleteTodo(\${index})">Delete</button>
+                </div>
+            \`).join('');
+        }
+        
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (text) {
+                todos.push(text);
+                localStorage.setItem('todos', JSON.stringify(todos));
+                input.value = '';
+                renderTodos();
+            }
+        }
+        
+        function deleteTodo(index) {
+            todos.splice(index, 1);
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTodos();
+        }
+        
+        // Initial render
+        renderTodos();
+    </script>
+</body>
+</html>
+\`\`\``;
+    }
+    
+    // Add more app templates as needed...
+    
+    return `I understand you want: "${description}". Here's a basic template to get you started:\n\n\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your App</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #0f172a;
+            color: white;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #4299e1; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your App</h1>
+        <p>Start building your amazing application!</p>
+        <!-- Add your components here -->
+    </div>
+    <script>
+        // Your JavaScript code here
+        console.log('App loaded successfully!');
+    </script>
+</body>
+</html>
+\`\`\``;
+}
+
+// Check if response contains code
+function containsCode(response) {
+    return response.includes('```') || response.includes('function') || response.includes('const ') || response.includes('let ');
+}
+
+// Extract and show code in preview
+function extractAndShowCode(response) {
+    const codeMatch = response.match(/```(?:html|javascript)?\n([\s\S]*?)```/);
+    if (codeMatch) {
+        currentGeneratedCode = codeMatch[1];
+        showPreview(currentGeneratedCode);
+        
+        // Add preview button to message
+        const messages = document.getElementById('chat-messages');
+        const lastMessage = messages.lastElementChild;
+        const previewButton = document.createElement('button');
+        previewButton.innerHTML = '<i class="fas fa-eye mr-1"></i>Live Preview';
+        previewButton.className = 'mt-2 px-3 py-1 bg-purple-500 rounded-lg text-white text-sm hover:bg-purple-600';
+        previewButton.onclick = () => togglePreview();
+        lastMessage.appendChild(previewButton);
     }
 }
 
-function getFallbackResponse(message) {
-    if (message.toLowerCase().includes('app')) {
-        return `Great question about app development! 🚀
-
-I'd love to help you build that. You can:
-1. Describe your app idea in the main panel
-2. Our AI will generate the complete code
-3. Preview it instantly in the preview window
-
-Need specific help with features or design?`;
-    }
-    return `Thanks for your message! I specialize in helping people create amazing web applications. Feel free to ask me anything about app development! 🎯`;
+// Show preview with generated code
+function showPreview(code) {
+    const previewFrame = document.getElementById('preview-frame');
+    previewFrame.srcdoc = code;
 }
 
-// =============================================
-// UTILITY FUNCTIONS
-// =============================================
+// Add message to chat
+function addMessage(content, sender) {
+    const messages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    
+    if (sender === 'user') {
+        messageDiv.innerHTML = `<strong>You:</strong> ${escapeHtml(content)}`;
+    } else {
+        // Format AI response with code highlighting
+        const formattedContent = formatAIResponse(content);
+        messageDiv.innerHTML = `<strong>BuildGenius AI:</strong> ${formattedContent}`;
+    }
+    
+    messages.appendChild(messageDiv);
+    messages.scrollTop = messages.scrollHeight;
+}
 
+// Format AI response
+function formatAIResponse(text) {
+    return text
+        .replace(/```([\s\S]*?)```/g, '<div class="code-block">$1</div>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+}
+
+// Typing indicator
+function showTyping() {
+    const messages = document.getElementById('chat-messages');
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'typing-indicator';
+    typingDiv.className = 'message ai-message';
+    typingDiv.innerHTML = '<strong>BuildGenius AI:</strong> <i class="fas fa-typing"></i> Generating code...';
+    messages.appendChild(typingDiv);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function hideTyping() {
+    const typing = document.getElementById('typing-indicator');
+    if (typing) typing.remove();
+}
+
+// Save chat history
+function saveToHistory(userMessage, aiResponse) {
+    chatHistory.push({
+        user: userMessage,
+        ai: aiResponse,
+        timestamp: new Date().toISOString()
+    });
+    localStorage.setItem('buildgenius_chat_history', JSON.stringify(chatHistory));
+}
+
+// Load chat history
+function loadChatHistory() {
+    const messages = document.getElementById('chat-messages');
+    messages.innerHTML = '<div class="message ai-message"><strong>BuildGenius AI:</strong> Hello! I can help you create complete apps. Describe what you want to build and I\'ll generate the code! 🚀</div>';
+    
+    chatHistory.forEach(chat => {
+        addMessage(chat.user, 'user');
+        addMessage(chat.ai, 'ai');
+    });
+}
+
+// Clear chat
+function clearChat() {
+    if (confirm('Clear all chat history?')) {
+        chatHistory = [];
+        localStorage.removeItem('buildgenius_chat_history');
+        loadChatHistory();
+    }
+}
+
+// Generate sample app
+function generateSampleApp() {
+    document.getElementById('chat-input').value = "Create a beautiful weather app with current temperature, 5-day forecast, and location search";
+    sendMessage();
+}
+
+// Download code
+function downloadCode() {
+    if (!currentGeneratedCode) return;
+    
+    const blob = new Blob([currentGeneratedCode], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'my-app.html';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Deploy app (simulated)
+function deployApp() {
+    alert('App deployed successfully! 🚀\n\nIn real implementation, this would connect to:\n- Netlify\n- Vercel\n- GitHub Pages\n- Your own hosting');
+}
+
+// Utility function
 function escapeHtml(unsafe) {
     return unsafe
         .replace(/&/g, "&amp;")
@@ -219,35 +364,7 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
-function formatAIResponse(text) {
-    return text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n/g, '<br>');
-}
-
-// =============================================
-// REST OF YOUR EXISTING CODE (App generation, etc.)
-// =============================================
-
-// ... (Your existing app generation code remains the same)
-// Just make sure to update the preview function to use the new sidebar
-
-let currentGeneratedCode = '';
-
-function showSection(sectionName) {
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.add('hidden');
-    });
-    document.getElementById(`${sectionName}-section`).classList.remove('hidden');
-}
-
-function insertTemplate(templateType) {
-    const templates = {
-        todo: "Create a beautiful todo list app with dark theme, add/delete tasks, local storage, and responsive design",
-        calculator: "Create a scientific calculator with basic operations, scientific functions, and beautiful UI",
-        weather: "Create a weather app with current temperature, forecast, and beautiful gradients"
-    };
-    document.getElementById('app-prompt').value = templates[templateType] || '';
-}
-
-// ... Continue with your existing app generation functions
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadChatHistory();
+});
