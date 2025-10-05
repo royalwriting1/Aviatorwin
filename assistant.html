@@ -22,6 +22,26 @@
             font-size: 12px; 
             color: #10b981; 
         }
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            color: #9ca3af;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #9ca3af;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -48,12 +68,12 @@
 
     <div class="container mx-auto p-8">
         <h1 class="text-4xl font-bold mb-2 text-center">AI Assistant</h1>
-        <p class="text-gray-400 text-center mb-8">Real AI generating real code</p>
+        <p class="text-gray-400 text-center mb-8">OpenAI Powered - Real Code Generation</p>
         
         <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 chat-container flex flex-col">
             <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
                 <div class="message ai-message">
-                    <strong>BuildGenius AI:</strong> I can generate real HTML/CSS/JS code. Describe your app!
+                    <strong>BuildGenius AI:</strong> I'm now powered by OpenAI! Describe your app and I'll generate complete code. 🚀
                 </div>
             </div>
 
@@ -74,10 +94,10 @@
                     <input 
                         type="text" 
                         id="chat-input"
-                        placeholder="Describe your app..."
+                        placeholder="Describe your app (e.g., weather app with dark theme)..."
                         class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                    <button onclick="sendMessage()" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition">
+                    <button onclick="sendMessage()" id="send-btn" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -100,12 +120,10 @@
     </div>
 
     <script>
-        // REAL AI CONFIGURATION
-        const AI_CONFIG = {
-            groq: {
-                url: 'https://api.groq.com/openai/v1/chat/completions',
-                apiKey: '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'
-            }
+        // OPENAI API CONFIGURATION
+        const OPENAI_CONFIG = {
+            url: 'https://api.openai.com/v1/chat/completions',
+            apiKey: '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'
         };
 
         let currentGeneratedCode = '';
@@ -117,6 +135,7 @@
             localStorage.removeItem('currentAppPrompt');
         }
 
+        // Event listeners
         document.getElementById('chat-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
         });
@@ -126,11 +145,21 @@
             const message = input.value.trim();
             if (!message) return;
 
+            // Disable button during processing
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
             addMessage(message, 'user');
             input.value = '';
 
+            // Show typing indicator
+            showTyping();
+
             try {
-                const response = await getRealAIResponse(message);
+                console.log("Calling OpenAI API...");
+                const response = await getOpenAIResponse(message);
+                console.log("OpenAI Response received");
                 addMessage(response, 'ai');
                 
                 if (containsCode(response)) {
@@ -138,96 +167,200 @@
                     showActionButtons();
                 }
             } catch (error) {
-                addMessage("Error: " + error.message, 'ai');
+                console.error("OpenAI Error:", error);
+                addMessage("OpenAI connection failed. Using local generator...", 'ai');
+                
+                // Fallback to local generator
+                const localResponse = generateLocalCode(message);
+                addMessage(localResponse, 'ai');
+                
+                if (containsCode(localResponse)) {
+                    extractAndStoreCode(localResponse);
+                    showActionButtons();
+                }
             }
+
+            // Re-enable button
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            hideTyping();
         }
 
-        // REAL AI FUNCTION
-        async function getRealAIResponse(userMessage) {
+        // OPENAI API FUNCTION
+        async function getOpenAIResponse(userMessage) {
             try {
-                const response = await fetch(AI_CONFIG.groq.url, {
+                const response = await fetch(OPENAI_CONFIG.url, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${AI_CONFIG.groq.apiKey}`,
+                        'Authorization': `Bearer ${OPENAI_CONFIG.apiKey}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        messages: [{
-                            role: 'system',
-                            content: `You are an expert web developer. Generate complete, working HTML/CSS/JS code based on user requests. 
-                            Always provide the complete code in a single HTML file with inline CSS and JavaScript.
-                            Make it responsive and modern. Format code properly.`
-                        }, {
-                            role: 'user',
-                            content: userMessage
-                        }],
-                        model: 'llama3-8b-8192',
-                        temperature: 0.7,
-                        max_tokens: 4000
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `You are an expert web developer. Generate complete, working HTML/CSS/JS code based on user requests.
+                                Always provide the complete code in a single HTML file with inline CSS and JavaScript.
+                                Make it responsive, modern, and well-commented.
+                                Format the response with the code in a code block.`
+                            },
+                            {
+                                role: 'user',
+                                content: `Create a complete web application: ${userMessage}. Provide the full HTML/CSS/JS code.`
+                            }
+                        ],
+                        max_tokens: 2000,
+                        temperature: 0.7
                     })
                 });
 
+                console.log("OpenAI Response status:", response.status);
+                
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error("OpenAI API Error:", errorText);
+                    throw new Error(`OpenAI API Error: ${response.status}`);
                 }
 
                 const data = await response.json();
+                console.log("OpenAI Response data:", data);
+                
+                if (!data.choices || !data.choices[0]) {
+                    throw new Error("Invalid response from OpenAI");
+                }
+                
                 return data.choices[0].message.content;
 
             } catch (error) {
-                console.error('AI Error:', error);
-                return generateFallbackCode(userMessage);
+                console.error('OpenAI API Error:', error);
+                throw error; // Re-throw to handle in sendMessage
             }
         }
 
-        function generateFallbackCode(prompt) {
-            return `I'll create that for you! Here's a complete working app:
+        // LOCAL FALLBACK GENERATOR
+        function generateLocalCode(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('weather')) {
+                return generateWeatherApp();
+            } else if (lowerMessage.includes('todo')) {
+                return generateTodoApp();
+            } else if (lowerMessage.includes('calculator')) {
+                return generateCalculatorApp();
+            } else {
+                return generateCustomApp(userMessage);
+            }
+        }
+
+        function generateWeatherApp() {
+            return `🌤️ Weather App Generated! (Local Fallback)
 
 \`\`\`html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your App</title>
+    <title>Weather App</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: Arial, sans-serif; 
-            background: #1a202c; 
-            color: white;
-            padding: 20px;
-            min-height: 100vh;
+            font-family: Arial; 
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white; margin: 0; padding: 20px; min-height: 100vh;
         }
-        .container { max-width: 800px; margin: 0 auto; text-align: center; padding-top: 50px; }
-        h1 { color: #4299e1; margin-bottom: 20px; }
-        .btn { 
-            background: #4299e1; 
-            color: white; 
-            padding: 12px 24px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px;
-        }
-        .btn:hover { background: #3182ce; }
+        .container { max-width: 500px; margin: 0 auto; text-align: center; }
+        .search-box { margin: 20px 0; }
+        input { padding: 12px; width: 70%; border: none; border-radius: 25px; }
+        button { padding: 12px 24px; background: #00b894; color: white; border: none; border-radius: 25px; cursor: pointer; }
+        .weather-card { background: rgba(255,255,255,0.2); padding: 30px; border-radius: 20px; margin: 20px 0; }
+        .temp { font-size: 3em; margin: 20px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Your Amazing App</h1>
-        <p>Built with BuildGenius AI</p>
-        <button class="btn" onclick="alert('Hello World!')">Click Me</button>
+        <h1>🌤️ Weather App</h1>
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Enter city">
+            <button onclick="getWeather()">Get Weather</button>
+        </div>
+        <div class="weather-card">
+            <h2 id="cityName">New York</h2>
+            <div class="temp" id="temperature">24°C</div>
+            <div id="description">Sunny</div>
+        </div>
     </div>
     <script>
-        console.log('App created successfully!');
+        function getWeather() {
+            const city = document.getElementById('cityInput').value || 'New York';
+            document.getElementById('cityName').textContent = city;
+            // Simulate API call
+            document.getElementById('temperature').textContent = (Math.random() * 30 + 10).toFixed(1) + '°C';
+        }
+        getWeather();
     </script>
 </body>
 </html>
 \`\`\``;
         }
 
+        function generateTodoApp() {
+            return `✅ Todo App Generated! (Local Fallback)
+
+\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <style>
+        body { font-family: Arial; background: #1a202c; color: white; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .input-section { display: flex; gap: 10px; margin: 20px 0; }
+        input { flex: 1; padding: 12px; border: none; border-radius: 8px; }
+        button { padding: 12px 20px; background: #4299e1; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .todo-item { background: #2d3748; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Todo List</h1>
+        <div class="input-section">
+            <input type="text" id="todoInput" placeholder="New task">
+            <button onclick="addTodo()">Add</button>
+        </div>
+        <div id="todoList"></div>
+    </div>
+    <script>
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        function renderTodos() {
+            document.getElementById('todoList').innerHTML = todos.map((todo, i) => \`
+                <div class="todo-item">
+                    <span>\${todo}</span>
+                    <button onclick="deleteTodo(\${i})">Delete</button>
+                </div>
+            \`).join('');
+        }
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (text) {
+                todos.push(text);
+                localStorage.setItem('todos', JSON.stringify(todos));
+                input.value = '';
+                renderTodos();
+            }
+        }
+        function deleteTodo(i) {
+            todos.splice(i, 1);
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTodos();
+        }
+        renderTodos();
+    </script>
+</body>
+</html>
+\`\`\``;
+        }
+
+        // UI Functions
         function addMessage(content, sender) {
             const messages = document.getElementById('chat-messages');
             const messageDiv = document.createElement('div');
@@ -241,6 +374,29 @@
             
             messages.appendChild(messageDiv);
             messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showTyping() {
+            const messages = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'message ai-message';
+            typingDiv.innerHTML = `
+                <strong>BuildGenius AI:</strong> 
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <span class="ml-2">Generating with OpenAI...</span>
+                </div>
+            `;
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
         }
 
         function showActionButtons() {
@@ -294,6 +450,9 @@
             const codeMatch = response.match(/```html\n([\s\S]*?)```/);
             if (codeMatch) {
                 currentGeneratedCode = codeMatch[1];
+                console.log("Code extracted successfully");
+            } else {
+                console.log("No code block found");
             }
         }
 
@@ -312,6 +471,159 @@
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>');
         }
+
+        // Additional app generators
+        function generateCalculatorApp() {
+            return `🧮 Calculator App Generated! (Local Fallback)
+            
+\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <style>
+        body { font-family: Arial; background: #1a202c; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .calculator { background: #2d3748; padding: 20px; border-radius: 10px; }
+        .display { background: #1a202c; padding: 20px; margin-bottom: 10px; border-radius: 5px; text-align: right; font-size: 2em; }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        button { padding: 20px; font-size: 1.2em; border: none; border-radius: 5px; cursor: pointer; }
+        .number { background: #4a5568; color: white; }
+        .operator { background: #e53e3e; color: white; }
+        .equals { background: #38a169; color: white; }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('/')">/</button>
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+            <button class="number" onclick="appendNumber('0')">0</button>
+            <button class="number" onclick="appendNumber('.')">.</button>
+            <button class="equals" onclick="calculate()">=</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+        </div>
+    </div>
+    <script>
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = '';
+
+        function updateDisplay() {
+            document.getElementById('display').textContent = currentInput;
+        }
+
+        function appendNumber(num) {
+            if (currentInput === '0' || currentInput === 'Error') {
+                currentInput = num;
+            } else {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            operator = op;
+            previousInput = currentInput;
+            currentInput = '0';
+        }
+
+        function calculate() {
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            if (isNaN(prev) || isNaN(current)) {
+                result = 'Error';
+            } else {
+                switch (operator) {
+                    case '+': result = prev + current; break;
+                    case '-': result = prev - current; break;
+                    case '*': result = prev * current; break;
+                    case '/': result = prev / current; break;
+                    default: return;
+                }
+            }
+            
+            currentInput = result.toString();
+            operator = null;
+            previousInput = '';
+            updateDisplay();
+        }
+
+        updateDisplay();
     </script>
 </body>
 </html>
+\`\`\``;
+        }
+
+        function generateCustomApp(userMessage) {
+            return `🚀 Custom App Generated! (Local Fallback)
+
+Based on: "${userMessage}"
+
+\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Custom App</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; margin: 0; padding: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .container { 
+            text-align: center; 
+            padding: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 3em; margin-bottom: 20px; }
+        p { font-size: 1.2em; margin-bottom: 30px; opacity: 0.9; }
+        .btn { 
+            background: rgba(255,255,255,0.2); 
+            padding: 15px 30px; 
+            border-radius: 25px; 
+            color: white; 
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Custom App</h1>
+        <p>Built with ❤️ using BuildGenius AI</p>
+        <button class="btn" onclick="alert('Hello World!')">Get Started</button>
+    </div>
+    <script>
+        console.log('Custom app created successfully!');
+    </script>
+</body>
+</html>
+\`\`\``;
+        }
+    </script>
+</body>
+</html>
+   
